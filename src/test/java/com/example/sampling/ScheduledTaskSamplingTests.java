@@ -1,5 +1,7 @@
 package com.example.sampling;
 
+import java.util.Map;
+
 import com.example.sampling.TracingCapture.EndedSpans;
 import com.example.sampling.TracingCapture.RecordingSampler;
 import com.example.sampling.TracingCapture.SamplerInput;
@@ -41,8 +43,8 @@ class ScheduledTaskSamplingTests {
         // the handler's onStart ran. Only the contextual name is computed at stop.
         StartedObservation started = this.startedObservations.first("tasks.scheduled.execution");
         assertThat(started.contextualName()).isNull();
-        assertThat(started.lowCardinalityKeyValues()).containsEntry("code.namespace", ReportScheduler.class.getName())
-            .containsEntry("code.function", "run");
+        assertThat(started.lowCardinalityKeyValues()).containsExactlyInAnyOrderEntriesOf(Map.of("code.namespace",
+                ReportScheduler.class.getName(), "code.function", "run", "exception", "none", "outcome", "UNKNOWN"));
     }
 
 }

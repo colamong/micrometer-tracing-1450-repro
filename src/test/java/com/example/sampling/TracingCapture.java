@@ -63,7 +63,9 @@ class TracingCapture {
         public SamplingResult shouldSample(Context parentContext, String traceId, String name, SpanKind spanKind,
                 Attributes attributes, List<LinkData> parentLinks) {
             boolean hasParent = Span.fromContext(parentContext).getSpanContext().isValid();
-            this.inputs.add(new SamplerInput(traceId, name, spanKind, attributes, hasParent));
+            // Copy: the SDK may hand over the map the started span keeps writing to.
+            Attributes snapshot = Attributes.builder().putAll(attributes).build();
+            this.inputs.add(new SamplerInput(traceId, name, spanKind, snapshot, hasParent));
             return SamplingResult.recordAndSample();
         }
 

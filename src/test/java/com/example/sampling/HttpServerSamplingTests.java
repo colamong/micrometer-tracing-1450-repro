@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 
 import com.example.sampling.TracingCapture.EndedSpans;
 import com.example.sampling.TracingCapture.RecordingSampler;
@@ -57,10 +58,11 @@ class HttpServerSamplingTests {
         assertThat(input.attributes().isEmpty()).isTrue();
 
         // At start the method is known; the URI template is not, since handler mapping
-        // has not run yet.
+        // has not run yet. status and outcome hold provisional values that only look final.
         StartedObservation started = this.startedObservations.first("http.server.requests");
         assertThat(started.contextualName()).isNull();
-        assertThat(started.lowCardinalityKeyValues()).containsEntry("method", "GET").containsEntry("uri", "UNKNOWN");
+        assertThat(started.lowCardinalityKeyValues()).containsExactlyInAnyOrderEntriesOf(Map.of("method", "GET", "uri",
+                "UNKNOWN", "status", "200", "outcome", "SUCCESS", "exception", "none"));
     }
 
 }

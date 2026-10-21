@@ -22,11 +22,12 @@ The tests also record what each `Observation.Context` holds when the handlers' `
 
 | Observation | `name` at start | `contextualName` at start | low cardinality key values at start |
 |---|---|---|---|
-| scheduled task | `tasks.scheduled.execution` | `null` | `code.namespace=com.example.sampling.ReportScheduler`, `code.function=run`, … |
-| HTTP server | `http.server.requests` | `null` | `method=GET`, `uri=UNKNOWN`, … |
+| scheduled task | `tasks.scheduled.execution` | `null` | `code.namespace=com.example.sampling.ReportScheduler`, `code.function=run`, `exception=none`, `outcome=UNKNOWN` |
+| HTTP server | `http.server.requests` | `null` | `method=GET`, `uri=UNKNOWN`, `status=200`, `outcome=SUCCESS`, `exception=none` |
 
 So the observation name and the convention's low cardinality key values are already on the
-context at `onStart`. `SimpleObservation.start()` applies the convention before it notifies
+context at `onStart`. Some of those values are provisional: the HTTP request has not been handled
+yet, but `status=200` and `outcome=SUCCESS` are already there. `SimpleObservation.start()` applies the convention before it notifies
 the handlers. The tracing handlers start the span without them, and set the name and tags in `onStop`.
 
 ## Where the captures come from
