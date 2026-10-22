@@ -40,7 +40,8 @@ class ScheduledTaskSamplingTests {
         assertThat(input.attributes().isEmpty()).isTrue();
 
         // The Observation already knew its name and low cardinality key values when
-        // the handler's onStart ran. Only the contextual name is computed at stop.
+        // the handler's onStart ran. The contextual name is only set at stop, where the
+        // key values are computed again.
         StartedObservation started = this.startedObservations.first("tasks.scheduled.execution");
         assertThat(started.contextualName()).isNull();
         assertThat(started.lowCardinalityKeyValues()).containsExactlyInAnyOrderEntriesOf(Map.of("code.namespace",

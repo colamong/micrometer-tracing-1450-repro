@@ -11,6 +11,7 @@ import com.example.sampling.TracingCapture.RecordingSampler;
 import com.example.sampling.TracingCapture.SamplerInput;
 import com.example.sampling.TracingCapture.StartedObservation;
 import com.example.sampling.TracingCapture.StartedObservations;
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,8 @@ class HttpServerSamplingTests {
 
         SpanData serverSpan = this.endedSpans.awaitEnded((span) -> span.getKind() == SpanKind.SERVER);
         assertThat(serverSpan.getName()).isEqualTo("http get /reports/{id}");
+        // By the time the span ends, the URI template is known.
+        assertThat(serverSpan.getAttributes().get(AttributeKey.stringKey("uri"))).isEqualTo("/reports/{id}");
 
         SamplerInput input = this.sampler.rootOf(serverSpan.getTraceId());
         // Wanted: at least "http.server.requests" with http.method / method.
